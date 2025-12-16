@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field
 
 from app.core.config import settings
 
-from app.orchestration.graph import run_orchestration
+from app.orchestration.graph import run_graph
 
 
 router = APIRouter(prefix="/api", tags=["orchestration"])
@@ -94,7 +94,7 @@ async def health() -> Dict[str, str]:
 @router.post("/ask", response_model=AskResponse)
 async def ask(req: AskRequest, _: None = Depends(verify_api_key)) -> AskResponse:
     try:
-        out = await run_orchestration(user_id=req.user_id, text=req.text, meta=req.meta)
+        out = await run_graph(user_id=req.user_id, text=req.text)
         return _normalize_output(out, req)
 
     except HTTPException:
