@@ -1,0 +1,22 @@
+version: "3.8"
+services:
+  orchestrator:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ENV=prod
+      - API_KEY=change-me
+      - LLM_BASE_URL=http://llm:8001
+      - LLM_MODEL=local
+    depends_on:
+      - llm
+
+  # Optional: placeholder. You should replace this with your vLLM container.
+  llm:
+    image: nginx:alpine
+    ports:
+      - "8001:8001"
+    command: ["sh","-c","echo 'Replace with vLLM OpenAI-compatible server' && sleep 360000"]
