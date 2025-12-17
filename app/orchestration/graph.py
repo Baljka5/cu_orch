@@ -34,7 +34,9 @@ graph.set_entry_point("guard")
 # ---------------------------------------------------------
 
 def guard_route(state: OrchestratorState) -> str:
-
+    """
+    If request is blocked → skip everything and finalize immediately.
+    """
     return "finalize" if state.blocked else "reform"
 
 
@@ -61,17 +63,25 @@ async def run_graph(
     text: str,
     meta: Optional[Dict[str, Any]] = None,
 ) -> OrchestratorState:
+    """
+    Run orchestration graph and return final OrchestratorState.
 
+    This function is the ONLY thing router.py should import.
+    """
+
+    # Initial state
     state = OrchestratorState(
         user_id=user_id,
         raw_text=text,
     )
 
+    # Optional meta (safe attach)
     if meta:
         try:
-            state.meta = meta
+            state.meta = meta  # type: ignore[attr-defined]
         except Exception:
             pass
 
+    # Run graph
     result: OrchestratorState = await compiled_graph.ainvoke(state)
     return result
